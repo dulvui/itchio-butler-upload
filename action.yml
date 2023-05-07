@@ -39,11 +39,10 @@ runs:
         path: butler
         key: ${{ runner.os }}-butler
 
-    - name: Download butler
+    - name: Download butler https://itch.io/docs/butler/installing.html
       if: steps.cache-butler.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        # From https://itch.io/docs/butler/installing.html
         curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
         unzip butler.zip
         chmod +x butler
