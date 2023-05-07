@@ -27,11 +27,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Check is running on mac-os
-      if: runner.os != 'macos'
-      shell: bash
-      run: exit 1
-    
     - name: Cache butler files
       id: cache-butler
       uses: actions/cache@v3
