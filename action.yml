@@ -1,0 +1,61 @@
+
+name: 'itch.io butler upload'
+description: 'itch.io: Upload your game to itch.io with butler'
+author: 'Simon Dalvai @dulvui'
+branding:
+  color: red
+  icon: upload-cloud
+
+inputs:
+  working-directory:
+    description: 'The working directory'
+    required: false
+    default: '.'
+  user:
+    description: 'itch.io user name'
+    required: true
+  game:
+    description: 'itch.io game name'
+    required: true
+  channel:
+    description: 'itch.io channel name for example: windows-beta, osx-bonus, linux-universal, or soundtrack'
+    required: true
+  api-key:
+    description: 'itch.io API key'
+    required: true
+  
+runs:
+  using: "composite"
+  steps:
+    - name: Check is running on mac-os
+      if: runner.os != 'macos'
+      shell: bash
+      run: exit 1
+    
+    - name: Cache butler files
+      id: cache-butler
+      uses: actions/cache@v3
+      with:
+        path: butler
+        key: ${{ runner.os }}-butler
+
+    - name: Download butler
+      if: steps.cache-butler.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        # From https://itch.io/docs/butler/installing.html
+
+        # -L follows redirects
+        # -O specifies output name
+        curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+        unzip butler.zip
+        # GNU unzip tends to not set the executable bit even though it's set in the .zip
+        chmod +x butler
+        # just a sanity check run (and also helpful in case you're sharing CI logs)
+        ./butler -V
+
+    - name: Upload to itchio
+      shell: bash
+      env: 
+        BUTLER_API_KEY: ${{ inputs.api-key }}
+      run: butler push ${{ inputs.working-directory }} ${{ inputs.user }}/${{ inputs.game }}:${{ inputs.channel }}
