@@ -1,3 +1,7 @@
+# ARCHIVED
+This action has been archived and will no longer be maintained.
+Please create your own fork.
+
 # itchio-butler-upload
 Simple Github Action using shell scripts to upload game to itch.io using butler.  
 If you are facing problems with the action or this README feels not complete, pull requests are welcome or open an issue.
